@@ -1,0 +1,5 @@
+exception:
+  error-mappings:
+    CREATOR_WAS_NOT_SET:
+      message: "Customer for this room was not set"
+      http-status: BAD_REQUEST

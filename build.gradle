@@ -3,6 +3,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.10.RELEASE'
     id 'org.asciidoctor.convert' version '1.5.8'
     id 'java'
+    id 'jacoco'
 }
 
 group = 'com.github.interview'
@@ -52,10 +53,31 @@ dependencyManagement {
 test {
     outputs.dir snippetsDir
     useJUnitPlatform()
-    failFast = true
+
+    finalizedBy jacocoTestReport
+    finalizedBy jacocoTestCoverageVerification
 }
 
 asciidoctor {
     inputs.dir snippetsDir
     dependsOn test
+}
+
+
+jacocoTestReport {
+    dependsOn test
+}
+
+jacoco {
+    reportsDir = file("$buildDir/reports")
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.85
+            }
+        }
+    }
 }
