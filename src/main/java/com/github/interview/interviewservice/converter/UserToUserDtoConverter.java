@@ -1,18 +1,21 @@
 package com.github.interview.interviewservice.converter;
 
+import com.github.interview.interviewservice.controller.dto.UserDto;
 import com.github.interview.interviewservice.domain.value.User;
-import com.github.interview.interviewservice.model.UserModel;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserToUserModelConverter implements Converter<User, UserModel> {
-
+public class UserToUserDtoConverter implements Converter<User, UserDto> {
     @Override
-    public UserModel convert(User source) {
-        return UserModel.builder()
-                .name(source.getName())
+    public UserDto convert(User source) {
+        if (source == null) {
+            return null;
+        }
+
+        return UserDto.builder()
                 .creator(source.isCreator())
+                .name(source.getName())
                 .build();
     }
 }

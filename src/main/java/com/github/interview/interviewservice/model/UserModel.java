@@ -18,6 +18,6 @@ import java.time.ZonedDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserModel {
     String name;
-    PositionModel position;
+    boolean creator;
     ZonedDateTime createdAt;
 }

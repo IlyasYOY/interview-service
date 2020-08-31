@@ -1,11 +1,11 @@
-package com.github.interview.interviewservice.domain.value;
+package com.github.interview.interviewservice.controller.dto;
 
 import lombok.Builder;
 import lombok.Value;
 
 @Value
 @Builder
-public class User {
+public class UserDto {
     String name;
     boolean creator;
 }

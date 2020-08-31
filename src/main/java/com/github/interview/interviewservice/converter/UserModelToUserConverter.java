@@ -6,11 +6,11 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserToUserModelConverter implements Converter<User, UserModel> {
+public class UserModelToUserConverter implements Converter<UserModel, User> {
 
     @Override
-    public UserModel convert(User source) {
-        return UserModel.builder()
+    public User convert(UserModel source) {
+        return User.builder()
                 .name(source.getName())
                 .creator(source.isCreator())
                 .build();

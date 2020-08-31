@@ -24,6 +24,5 @@ public class ApplicationException extends RuntimeException {
     public static ApplicationException of(ErrorType errorType, Map<String, String> context) {
         UUID uuid = UUID.randomUUID();
         return new ApplicationException(uuid.toString(), errorType, context);
-
     }
 }

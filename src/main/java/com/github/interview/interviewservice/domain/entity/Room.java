@@ -1,20 +1,20 @@
 package com.github.interview.interviewservice.domain.entity;
 
 import com.github.interview.interviewservice.domain.Hasher;
-import com.github.interview.interviewservice.domain.value.Position;
+import com.github.interview.interviewservice.domain.value.RoomUsername;
 import com.github.interview.interviewservice.domain.value.User;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 
 @Value
 @Builder
 public class Room {
-    private static final String ROOM_ID_USERNAME_TEMPLATE = "%s:%s";
-
     String id;
     long version;
     @Builder.Default
@@ -30,12 +30,15 @@ public class Room {
                 .user(User.builder()
                         .creator(true)
                         .name(username)
-                        .position(Position.builder()
-                                .column(0)
-                                .line(0)
-                                .build())
                         .build())
                 .version(0);
+    }
+
+    public static Mono<Room> getRoomForHash(Hasher hasher, String hash, Function<String, Mono<Room>> roomFinder) {
+        return RoomUsername.of(hasher, hash)
+                .map(RoomUsername::getRoomId)
+                .map(roomFinder)
+                .orElse(Mono.empty());
     }
 
     public String getCreatorHash(Hasher hasher) {
@@ -47,7 +50,32 @@ public class Room {
     }
 
     public String getUserHash(Hasher hasher, String username) {
-        String roomIdAndUsername = String.format(ROOM_ID_USERNAME_TEMPLATE, id, username);
-        return hasher.hash(roomIdAndUsername);
+        RoomUsername roomIdAndUsername = RoomUsername.of(id, username);
+        return roomIdAndUsername.toString(hasher);
+    }
+
+    public boolean addUser(String username) {
+        boolean userExists = users.stream().anyMatch(user -> username.equalsIgnoreCase(user.getName()));
+
+        if (userExists) {
+            return false;
+        }
+
+        User user = User.builder()
+                .creator(false)
+                .name(username)
+                .build();
+        users.add(user);
+
+        return true;
+    }
+
+    public User getUserByHash(Hasher hasher, String hash) {
+        return RoomUsername.of(hasher, hash)
+                .map(RoomUsername::getUsername)
+                .flatMap(username -> users.stream()
+                        .filter(user -> username.equalsIgnoreCase(user.getName()))
+                        .findFirst())
+                .orElse(null);
     }
 }
