@@ -5,7 +5,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class CreateRoomResponseDot {
+public class CreateRoomResponseDto {
     String roomId;
     String userHash;
 }

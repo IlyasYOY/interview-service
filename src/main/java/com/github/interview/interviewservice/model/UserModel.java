@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.FieldNameConstants;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -19,5 +19,5 @@ import java.time.ZonedDateTime;
 public class UserModel {
     String name;
     boolean creator;
-    ZonedDateTime createdAt;
+    LocalDateTime createdAt;
 }

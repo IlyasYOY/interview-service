@@ -65,7 +65,7 @@ asciidoctor {
 
 
 jacocoTestReport {
-    dependsOn test
+    dependsOn build
 }
 
 jacoco {

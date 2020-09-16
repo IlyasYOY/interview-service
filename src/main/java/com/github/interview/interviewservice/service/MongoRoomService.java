@@ -1,12 +1,13 @@
 package com.github.interview.interviewservice.service;
 
-import com.github.interview.interviewservice.controller.dto.CreateRoomResponseDot;
+import com.github.interview.interviewservice.controller.dto.CreateRoomResponseDto;
 import com.github.interview.interviewservice.controller.dto.EnterRoomResponseDto;
 import com.github.interview.interviewservice.controller.dto.GetRoomResponseDto;
 import com.github.interview.interviewservice.controller.dto.UserDto;
 import com.github.interview.interviewservice.controller.exception.ApplicationException;
 import com.github.interview.interviewservice.controller.exception.ErrorType;
 import com.github.interview.interviewservice.domain.Hasher;
+import com.github.interview.interviewservice.domain.IdGenerator;
 import com.github.interview.interviewservice.domain.entity.Room;
 import com.github.interview.interviewservice.domain.value.User;
 import com.github.interview.interviewservice.model.RoomModel;
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.time.Clock;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -30,12 +31,13 @@ public class MongoRoomService implements RoomService {
     private final Converter<RoomModel, Room> roomModelRoomConverter;
     private final Converter<User, UserDto> userUserDtoConverter;
     private final RoomRepository roomRepository;
+    private final IdGenerator idGenerator;
     private final Hasher hasher;
     private final Clock clock;
 
     @Override
-    public Mono<CreateRoomResponseDot> create(String username) {
-        Room room = Room.forUser(username).build();
+    public Mono<CreateRoomResponseDto> create(String username) {
+        Room room = Room.forUser(idGenerator, username).build();
         String creatorHash = room.getCreatorHash(hasher);
 
         if (creatorHash == null) {
@@ -43,13 +45,13 @@ public class MongoRoomService implements RoomService {
         }
 
         RoomModel roomModel = roomRoomModelConverter.convert(room);
-        ZonedDateTime now = ZonedDateTime.now(clock);
+        LocalDateTime now = LocalDateTime.now(clock);
         roomModel.setCreatedAt(now);
         roomModel.setUpdatedAt(now);
         roomModel.getUsers().forEach(userModel -> userModel.setCreatedAt(now));
 
         return roomRepository.save(roomModel)
-                .map(it -> CreateRoomResponseDot.builder()
+                .map(it -> CreateRoomResponseDto.builder()
                         .roomId(it.getId())
                         .userHash(creatorHash)
                         .build());

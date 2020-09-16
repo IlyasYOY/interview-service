@@ -1,4 +1,7 @@
 exception:
+  default-error-info:
+    http-status: internal_server_error
+    message: "Error happened during request"
   error-mappings:
     CREATOR_WAS_NOT_SET:
       message: "Customer for this room was not set"

@@ -1,19 +1,24 @@
 package com.github.interview.interviewservice.domain.entity;
 
 import com.github.interview.interviewservice.domain.Hasher;
+import com.github.interview.interviewservice.domain.IdGenerator;
 import com.github.interview.interviewservice.domain.value.RoomUsername;
 import com.github.interview.interviewservice.domain.value.User;
+import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Singular;
-import lombok.Value;
+import lombok.experimental.FieldDefaults;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-@Value
+@Data
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Room {
     String id;
     long version;
@@ -22,11 +27,11 @@ public class Room {
     @Singular
     List<User> users;
 
-    public static RoomBuilder forUser(String username) {
-        UUID uuid = UUID.randomUUID();
+    public static RoomBuilder forUser(IdGenerator idGenerator, String username) {
+        String id = idGenerator.get();
 
         return Room.builder()
-                .id(uuid.toString())
+                .id(id)
                 .user(User.builder()
                         .creator(true)
                         .name(username)
@@ -65,7 +70,8 @@ public class Room {
                 .creator(false)
                 .name(username)
                 .build();
-        users.add(user);
+        users = Stream.concat(users.stream(), Stream.of(user))
+                .collect(Collectors.toList());
 
         return true;
     }

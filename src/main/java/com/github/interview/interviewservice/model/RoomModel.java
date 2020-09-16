@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.FieldNameConstants;
 import org.springframework.data.annotation.Id;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -24,6 +24,6 @@ public class RoomModel {
     List<UserModel> users;
     String text;
     Long version;
-    ZonedDateTime createdAt;
-    ZonedDateTime updatedAt;
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
 }

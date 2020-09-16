@@ -25,10 +25,7 @@ public class ExceptionProperties {
     Map<@NotNull ErrorType, @NotNull ErrorInfo> errorMappings;
 
     @NotNull
-    HttpStatus defaultHttpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-
-    @NotBlank
-    String defaultMessage = "Error happened during request";
+    ErrorInfo defaultErrorInfo;
 
     @PostConstruct
     public void show() {
@@ -41,6 +38,7 @@ public class ExceptionProperties {
     public static class ErrorInfo {
         @NotBlank
         String message;
+        @NotNull
         HttpStatus httpStatus;
     }
 }

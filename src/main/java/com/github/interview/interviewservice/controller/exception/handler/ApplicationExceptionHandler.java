@@ -4,7 +4,6 @@ import com.github.interview.interviewservice.configuration.properties.ExceptionP
 import com.github.interview.interviewservice.controller.dto.ErrorDto;
 import com.github.interview.interviewservice.controller.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -21,21 +20,14 @@ public class ApplicationExceptionHandler {
     @ExceptionHandler(ApplicationException.class)
     public ResponseEntity<ErrorDto> handle(ApplicationException applicationException) {
         ExceptionProperties.ErrorInfo errorInfo = exceptionProperties.getErrorMappings()
-                .get(applicationException.getErrorType());
-
-        String message = errorInfo.getMessage() != null
-                ? errorInfo.getMessage()
-                : exceptionProperties.getDefaultMessage();
-        HttpStatus httpStatus = errorInfo.getHttpStatus() != null
-                ? errorInfo.getHttpStatus()
-                : exceptionProperties.getDefaultHttpStatus();
+                .getOrDefault(applicationException.getErrorType(), exceptionProperties.getDefaultErrorInfo());
 
         return ResponseEntity
-                .status(httpStatus)
+                .status(errorInfo.getHttpStatus())
                 .body(ErrorDto.builder()
                         .context(applicationException.getContext())
                         .id(applicationException.getId())
-                        .message(message)
+                        .message(errorInfo.getMessage())
                         .time(ZonedDateTime.now(clock))
                         .build());
     }

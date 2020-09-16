@@ -33,7 +33,7 @@ public class RoomUsername {
     }
 
     public String toString(Hasher hasher) {
-        return hasher.dehash(toString());
+        return hasher.hash(toString());
     }
 
     @Override
